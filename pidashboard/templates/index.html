@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pi Display</title>
+
+<style>
+body {
+    margin: 0;
+    background: black;
+    color: #00ffcc;
+    font-family: monospace;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 10px;
+    padding: 20px;
+}
+
+.card {
+    background: #111;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.full {
+    grid-column: span 2;
+}
+
+.big {
+    font-size: 2em;
+}
+
+.line {
+    font-size: 1.2em;
+    margin: 5px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="card big" id="time">--:--</div>
+    <div class="card big" id="weather">--</div>
+
+    <div class="card full" id="departures">
+        Loading departures...
+    </div>
+</div>
+
+<script>
+async function fetchData() {
+    try {
+        const response = await fetch('/data');
+        const data = await response.json();
+
+        document.getElementById("time").innerText = data.time;
+        document.getElementById("weather").innerText = data.weather;
+
+        let depHtml = "";
+
+        data.departures.forEach(d => {
+            let style = d.minutes < 20 ? "style='color: red;'" : "";
+            depHtml += `<div class="line">🚌 ${d.line} ${d.time} ${d.minutes}m</div>`;
+        });
+
+        document.getElementById("departures").innerHTML = depHtml;
+
+    } catch (err) {
+        console.log("Error fetching data", err);
+    }
+}
+
+// Poll every 10 seconds
+setInterval(fetchData, 60000);
+
+// Initial load
+fetchData();
+</script>
+
+</body>
+</html>
