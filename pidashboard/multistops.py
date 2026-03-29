@@ -35,7 +35,7 @@ def get_departures(stop_name):
 
 
 # Example usage
-stop = "Prévessin-Moëns, mairie"
-
-for dep in get_departures(stop):
-    print(dep)
+for stop in ["Prévessin-Moëns, mairie","Ornex, Prénepla"]:
+    print(stop)
+    for dep in get_departures(stop):
+        print(dep)

@@ -1,75 +1,62 @@
-from flask import Flask, jsonify, render_template
-from datetime import datetime
+from flask import Flask, render_template
 import requests
+from datetime import datetime
 
 app = Flask(__name__)
 
-URL = "https://transport.opendata.ch/v1/connections"
+STOPS = ["Prévessin-Moëns, mairie", "Ornex, Prénepla"]
 
-def parse_time(dt_str):
-    return datetime.fromisoformat(dt_str)
-
-
-def get_departures():
+def get_departures(stop_name):
+    url = "https://transport.opendata.ch/v1/stationboard"
     params = {
-        "from": "Prévessin, Prenepla",
-        "to": "Genève",
-        "limit": 3
+        "station": stop_name,
+        "limit": 5
     }
 
-    r = requests.get(URL, params=params)
-    data = r.json()
+    response = requests.get(url, params=params)
+    data = response.json()
 
-    now = datetime.now().astimezone()  # local time with timezone
-    results = []
+    departures = []
 
-    for conn in data.get("connections", []):
-        dep_str = conn["from"]["departure"]
+    for entry in data.get("stationboard", []):
+        line = entry.get("number", "?")
+        destination = entry.get("to", "?")
 
-        # Parse ISO time (already includes timezone if provided)
-        dep = datetime.fromisoformat(dep_str).astimezone()
+        stop_info = entry.get("stop", {})
+        departure_time = stop_info.get("departure")
 
-        minutes = int((dep - now).total_seconds() // 60)
-        if minutes < 0:
-            continue
+        if departure_time:
+            dt = datetime.fromisoformat(departure_time)
+            time_str = dt.strftime("%H:%M")
+        else:
+            time_str = "??:??"
 
-        line = (
-            conn["sections"][0]["journey"]["number"]
-            if conn["sections"][0].get("journey")
-            else conn["products"][0]
-        )
+        delay = stop_info.get("delay", 0)
+        delay_str = f"+{delay} min" if delay else "on time"
 
-        line = line.replace("Bus ", "")
-        time_str = dep.strftime("%H:%M")
-
-        results.append({
-                "line": line,
-                "time": time_str,
-                "minutes": minutes
-
+        departures.append({
+            "time": time_str,
+            "line": line,
+            "destination": destination,
+            "delay": delay_str
         })
 
-    return results
-
-
-
-
-@app.route("/data")
-def data():
-    now = datetime.now().strftime("%H:%M")
-
-    return jsonify({
-        "time": now,
-        "weather": "12°C Cloudy",  # replace later with real API
-        "departures": get_departures()
-    })
-
-
+    return departures
 
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    all_stops = []
+
+    for stop in STOPS:
+        all_stops.append({
+            "name": stop,
+            "departures": get_departures(stop)
+        })
+
+    return render_template("index.html", stops=all_stops)
+
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(debug=True)
+    

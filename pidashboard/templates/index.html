@@ -1,86 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Pi Display</title>
-
-<style>
-body {
-    margin: 0;
-    background: black;
-    color: #00ffcc;
-    font-family: monospace;
-}
-
-.container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    gap: 10px;
-    padding: 20px;
-}
-
-.card {
-    background: #111;
-    padding: 15px;
-    border-radius: 10px;
-}
-
-.full {
-    grid-column: span 2;
-}
-
-.big {
-    font-size: 2em;
-}
-
-.line {
-    font-size: 1.2em;
-    margin: 5px 0;
-}
-</style>
+    <title>Departures</title>
+    <meta http-equiv="refresh" content="30"> <!-- auto refresh -->
+    <style>
+        body {
+            font-family: Arial;
+            background: #111;
+            color: #eee;
+        }
+        h2 {
+            border-bottom: 1px solid #444;
+        }
+        .departure {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+        }
+        .delay {
+            color: orange;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="container">
-    <div class="card big" id="time">--:--</div>
-    <div class="card big" id="weather">--</div>
+<h1>Live Departures</h1>
 
-    <div class="card full" id="departures">
-        Loading departures...
-    </div>
-</div>
+{% for stop in stops %}
+    <h2>{{ stop.name }}</h2>
 
-<script>
-async function fetchData() {
-    try {
-        const response = await fetch('/data');
-        const data = await response.json();
+    {% for dep in stop.departures %}
+        <div class="departure">
+            <span>{{ dep.time }}</span>
+            <span>{{ dep.line }}</span>
+            <span>{{ dep.destination }}</span>
+            <span class="delay">{{ dep.delay }}</span>
+        </div>
+    {% endfor %}
 
-        document.getElementById("time").innerText = data.time;
-        document.getElementById("weather").innerText = data.weather;
-
-        let depHtml = "";
-
-        data.departures.forEach(d => {
-            let style = d.minutes < 20 ? "style='color: red;'" : "";
-            depHtml += `<div class="line">🚌 ${d.line} ${d.time} ${d.minutes}m</div>`;
-        });
-
-        document.getElementById("departures").innerHTML = depHtml;
-
-    } catch (err) {
-        console.log("Error fetching data", err);
-    }
-}
-
-// Poll every 10 seconds
-setInterval(fetchData, 60000);
-
-// Initial load
-fetchData();
-</script>
+{% endfor %}
 
 </body>
 </html>
