@@ -58,7 +58,6 @@ def get_departures(stop_name):
 
     return departures
 
-
 @app.route("/")
 def index():
     all_stops = []
@@ -69,7 +68,8 @@ def index():
             "departures": get_departures(stop)
         })
 
-    return render_template("index.html", stops=all_stops)
+    now_time = datetime.now()
+    return render_template("index.html", stops=all_stops, now=now_time)
 
 
 if __name__ == "__main__":

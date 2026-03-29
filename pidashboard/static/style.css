@@ -1,0 +1,87 @@
+/* Body & general styles */
+body {
+    margin: 0;
+    background: black;
+    color: #00ffcc;
+    font-family: "Courier New", monospace;
+}
+
+/* Header */
+h1 {
+    text-align: center;
+    padding: 10px;
+    font-size: 40px;
+}
+
+/* Stop section */
+.stop {
+    margin: 20px;
+}
+
+.stop h2 {
+    color: #ffffff;
+    border-bottom: 2px solid #00ffcc;
+    margin-bottom: 10px;
+}
+
+/* Grid row */
+.row {
+    display: grid;
+    grid-template-columns: 230px 80px 1fr 120px; /* wider time column */
+    font-size: 28px;
+    padding: 6px 0;
+}
+
+/* Prevent wrapping */
+.row div {
+    white-space: nowrap;
+}
+
+/* Column alignment */
+.row .time {
+    text-align: left;
+    font-weight: bold;
+}
+
+.row .line {
+    text-align: center;
+}
+
+.row .destination {
+    padding-left: 10px;
+}
+
+.row .delay {
+    text-align: right;
+    font-weight: bold;
+}
+
+/* Delay coloring */
+.row .ontime {
+    color: #00ffcc;
+}
+.row .late {
+    color: red;
+}
+
+/* Flashing imminent departure */
+.flash {
+    animation: flashAnim 1s infinite alternate;
+    color: yellow;
+    font-weight: bold;
+}
+
+/* Flash animation */
+@keyframes flashAnim {
+    0% { color: yellow; }
+    50% { color: #ffffff; }
+    100% { color: yellow; }
+}
+
+/* Footer with last update */
+.footer {
+    text-align: center;
+    color: #888;
+    font-size: 16px;
+    padding: 10px;
+}

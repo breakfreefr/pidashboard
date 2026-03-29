@@ -1,52 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Departures</title>
-    <meta http-equiv="refresh" content="20">
-    <style>
-        body {
-            margin: 0;
-            background: black;
-            color: #00ffcc;
-            font-family: "Courier New", monospace;
-        }
-
-        h1 {
-            text-align: center;
-            padding: 10px;
-            font-size: 40px;
-        }
-
-        .stop {
-            margin: 20px;
-        }
-
-        .stop h2 {
-            color: #ffffff;
-            border-bottom: 2px solid #00ffcc;
-        }
-
-        .row {
-            display: grid;
-            grid-template-columns: 340px 80px 1fr 120px;
-            font-size: 28px;
-            padding: 6px 0;
-        }
-
-
-
-        .delay {
-            text-align: right;
-        }
-
-        .late {
-            color: red;
-        }
-
-        .ontime {
-            color: #00ffcc;
-        }
-    </style>
+    <title>Live Departures</title>
+    <meta http-equiv="refresh" content="20"> <!-- auto-refresh -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"
 </head>
 <body>
 
@@ -57,17 +14,17 @@
     <h2>{{ stop.name }}</h2>
 
     {% for dep in stop.departures %}
-    <div class="row">
-        <div>{{ dep.time }}</div>
-        <div>{{ dep.line }}</div>
-        <div>{{ dep.destination }}</div>
-        <div class="delay {{ 'late' if '+' in dep.delay else 'ontime' }}">
-            {{ dep.delay }}
-        </div>
+    <div class="row {% if 'NOW' in dep.time %}flash{% endif %}">
+        <div class="time">{{ dep.time }}</div>
+        <div class="line">{{ dep.line }}</div>
+        <div class="destination">{{ dep.destination }}</div>
+        <div class="delay {{ 'late' if '+' in dep.delay else 'ontime' }}">{{ dep.delay }}</div>
     </div>
     {% endfor %}
 </div>
 {% endfor %}
+
+<div class="footer">Last update: {{ now.strftime("%H:%M:%S") }}</div>
 
 </body>
 </html>
