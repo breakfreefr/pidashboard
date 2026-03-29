@@ -10,7 +10,7 @@ def get_departures(stop_name):
     url = "https://transport.opendata.ch/v1/stationboard"
     params = {
         "station": stop_name,
-        "limit": 5
+        "limit": 4
     }
 
     response = requests.get(url, params=params)
@@ -27,9 +27,24 @@ def get_departures(stop_name):
 
         if departure_time:
             dt = datetime.fromisoformat(departure_time)
-            time_str = dt.strftime("%H:%M")
+
+            # Clock time
+            clock_time = dt.strftime("%H:%M")
+
+            # Countdown
+            now = datetime.now(dt.tzinfo)
+            minutes = int((dt - now).total_seconds() / 60)
+
+            if minutes <= 0:
+                countdown = "NOW"
+            else:
+                countdown = f"{minutes} min"
+
+            # Combine both
+            time_str = f"{clock_time} ({countdown})"
         else:
-            time_str = "??:??"
+            time_str = "??" 
+        
 
         delay = stop_info.get("delay", 0)
         delay_str = f"+{delay} min" if delay else "on time"
@@ -59,4 +74,3 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True)
-    

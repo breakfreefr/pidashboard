@@ -2,42 +2,71 @@
 <html>
 <head>
     <title>Departures</title>
-    <meta http-equiv="refresh" content="30"> <!-- auto refresh -->
+    <meta http-equiv="refresh" content="20">
     <style>
         body {
-            font-family: Arial;
-            background: #111;
-            color: #eee;
+            margin: 0;
+            background: black;
+            color: #00ffcc;
+            font-family: "Courier New", monospace;
         }
-        h2 {
-            border-bottom: 1px solid #444;
+
+        h1 {
+            text-align: center;
+            padding: 10px;
+            font-size: 40px;
         }
-        .departure {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
+
+        .stop {
+            margin: 20px;
         }
+
+        .stop h2 {
+            color: #ffffff;
+            border-bottom: 2px solid #00ffcc;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 340px 80px 1fr 120px;
+            font-size: 28px;
+            padding: 6px 0;
+        }
+
+
+
         .delay {
-            color: orange;
+            text-align: right;
+        }
+
+        .late {
+            color: red;
+        }
+
+        .ontime {
+            color: #00ffcc;
         }
     </style>
 </head>
 <body>
 
-<h1>Live Departures</h1>
+<h1>LIVE DEPARTURES</h1>
 
 {% for stop in stops %}
+<div class="stop">
     <h2>{{ stop.name }}</h2>
 
     {% for dep in stop.departures %}
-        <div class="departure">
-            <span>{{ dep.time }}</span>
-            <span>{{ dep.line }}</span>
-            <span>{{ dep.destination }}</span>
-            <span class="delay">{{ dep.delay }}</span>
+    <div class="row">
+        <div>{{ dep.time }}</div>
+        <div>{{ dep.line }}</div>
+        <div>{{ dep.destination }}</div>
+        <div class="delay {{ 'late' if '+' in dep.delay else 'ontime' }}">
+            {{ dep.delay }}
         </div>
+    </div>
     {% endfor %}
-
+</div>
 {% endfor %}
 
 </body>
