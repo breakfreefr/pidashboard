@@ -15,14 +15,30 @@
 
     {% for dep in stop.departures %}
     <div class="row {% if 'NOW' in dep.time %}flash{% endif %}">
-        <div class="time">{{ dep.time }}</div>
+        <div class="time flip-container">
+            <div class="flip-inner">{{ dep.time }}</div>
+        </div>
         <div class="line">{{ dep.line }}</div>
         <div class="destination">{{ dep.destination }}</div>
         <div class="delay {{ 'late' if '+' in dep.delay else 'ontime' }}">{{ dep.delay }}</div>
     </div>
-    {% endfor %}
+{% endfor %}    
 </div>
 {% endfor %}
+
+<script>
+function flipTimes() {
+    const times = document.querySelectorAll('.flip-inner');
+    times.forEach(el => {
+        el.classList.remove('flip');
+        void el.offsetWidth; // force reflow
+        el.classList.add('flip');
+    });
+}
+
+// Trigger flip every refresh
+setInterval(flipTimes, 2000); // adjust as needed
+</script>
 
 <div class="footer">Last update: {{ now.strftime("%H:%M:%S") }}</div>
 

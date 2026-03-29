@@ -27,7 +27,7 @@ h1 {
 /* Grid row */
 .row {
     display: grid;
-    grid-template-columns: 230px 80px 1fr 120px; /* wider time column */
+    grid-template-columns: 220px 80px 1fr 120px; /* wider time column */
     font-size: 28px;
     padding: 6px 0;
 }
@@ -78,6 +78,10 @@ h1 {
     100% { color: yellow; }
 }
 
+.flash.flip {
+    color: yellow;
+    font-weight: bold;
+}
 /* Footer with last update */
 .footer {
     text-align: center;
