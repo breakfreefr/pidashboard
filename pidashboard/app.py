@@ -4,7 +4,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-STOPS = ["Prévessin-Moëns, mairie", "Ornex, Prénepla"]
+STOPS = ["Prévessin-Moëns, mairie", "Ornex, Prénepla", "Meyrin, CERN"]
 
 def get_departures(stop_name):
     url = "https://transport.opendata.ch/v1/stationboard"
@@ -26,6 +26,11 @@ def get_departures(stop_name):
         departure_time = stop_info.get("departure")
 
         if departure_time:
+            # Fix timezone format for Python
+            if departure_time[-5] in ["+", "-"] and departure_time[-3] != ":":
+                # Convert +0200 → +02:00
+                departure_time = departure_time[:-2] + ":" + departure_time[-2:]
+
             dt = datetime.fromisoformat(departure_time)
 
             # Clock time
