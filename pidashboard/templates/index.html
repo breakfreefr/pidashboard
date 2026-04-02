@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<h1>LIVE DEPARTURES</h1>
+<h1>LIVE DEPARTURES @ {{ now.strftime("%H:%M:%S") }}</h1>
 
 {% for stop in stops %}
 <div class="stop">

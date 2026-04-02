@@ -3,6 +3,7 @@ import requests
 from datetime import datetime
 
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 STOPS = ["Prévessin-Moëns, mairie", "Ornex, Prénepla", "Meyrin, CERN"]
 
@@ -10,7 +11,7 @@ def get_departures(stop_name):
     url = "https://transport.opendata.ch/v1/stationboard"
     params = {
         "station": stop_name,
-        "limit": 4
+        "limit": 6
     }
 
     response = requests.get(url, params=params)
