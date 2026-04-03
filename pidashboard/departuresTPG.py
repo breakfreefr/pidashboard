@@ -3,6 +3,7 @@ import requests
 from datetime import datetime
 
 app = Flask(__name__)
+
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 STOPS = ["Prévessin-Moëns, mairie", "Ornex, Prénepla", "Meyrin, CERN"]
@@ -77,6 +78,23 @@ def index():
     now_time = datetime.now()
     return render_template("index.html", stops=all_stops, now=now_time)
 
+from flask import jsonify
+
+@app.route("/lametric")
+def lametric():
+    data = {
+        "frames": [
+            {
+                "text": "09:54 Lyon",
+                "icon": 1234
+            },
+            {
+                "text": "On time",
+                "icon": 5678
+            }
+        ]
+    }
+    return jsonify(data)
 
 if __name__ == "__main__":
     app.run(debug=True)

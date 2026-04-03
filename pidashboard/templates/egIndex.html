@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Departures</title>
+
+    <!-- auto refresh every 30s -->
+    <meta http-equiv="refresh" content="30">
+
+    <style>
+        body {
+            background-color: black;
+            color: #00ffcc;
+            font-family: "Courier New", monospace;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: orange;
+            text-align: center;
+            letter-spacing: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 32px;
+        }
+
+        th {
+            color: white;
+            border-bottom: 2px solid #444;
+            text-align: left;
+            padding-bottom: 10px;
+        }
+
+        td {
+            padding: 12px 0;
+        }
+
+        .delay {
+            color: red;
+        }
+
+        .on-time {
+            color: #00ffcc;
+        }
+
+        .clock {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 24px;
+        }
+            .flip {
+                position: relative;
+                display: inline-block;
+                perspective: 600px;
+                min-width: 120px;
+            }
+
+            .flip-inner {
+                position: relative;
+                width: 100%;
+                transition: transform 0.4s ease-in-out;
+                transform-style: preserve-3d;
+            }
+
+            /* FLIP ACTION */
+            .flip-inner.flipped {
+                transform: rotateX(180deg);
+            }
+
+            /* FRONT + BACK */
+            .flip-front, .flip-back {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                backface-visibility: hidden;
+                transform: rotateX(0deg);
+            }
+
+            /* BACK SIDE */
+            .flip-back {
+                transform: rotateX(180deg);
+            }
+
+            /* ensure row height doesn't collapse */
+            td {
+                padding: 12px 0;
+                height: 40px;
+}
+
+    </style>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById("clock").innerText =
+                now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        setInterval(updateClock, 1000);
+    </script>
+</head>
+
+<script>
+function triggerFlip() {
+    const elements = document.querySelectorAll('.flip-inner');
+
+    elements.forEach((el, index) => {
+        setTimeout(() => {
+            el.classList.add('flipped');
+
+            setTimeout(() => {
+                el.classList.remove('flipped');
+            }, 400);
+
+        }, index * 100); // stagger effect
+    });
+}
+
+// run flip every refresh cycle
+setInterval(triggerFlip, 5000);
+</script>
+
+<body onload="updateClock()">
+
+<div id="clock" class="clock"></div>
+
+<h1>DEPARTURES</h1>
+
+<table>
+    <tr>
+        <th>TIME</th>
+        <th>DESTINATION</th>
+        <th>PLATFORM</th>
+        <th>STATUS</th>
+    </tr>
+
+    {% for dep in departures %}
+    <tr>      
+        <td>
+            <div class="flip">
+                <div class="flip-inner">
+                <span class="flip-front">{{ dep.time }}</span>
+                <span class="flip-back">{{ dep.time }}</span>
+                </div>
+            </div>
+            </td>
+            <td>
+            <div class="flip">
+                <div class="flip-inner">
+                <span class="flip-front">{{ dep.destination }}</span>
+                <span class="flip-back">{{ dep.destination }}</span>
+                </div>
+            </div>
+            </td>
+            <td>
+            <div class="flip">
+                <div class="flip-inner">
+                <span class="flip-front">{{ dep.platform }}</span>
+                <span class="flip-back">{{ dep.platform }}</span>
+                </div>
+            </div>
+            </td>
+            <td>
+            <div class="flip">
+                <div class="flip-inner">
+                <span class="flip-front">{{ dep.time }}</span>
+                <span class="flip-back">{{ dep.time }}</span>
+                </div>
+            </div>
+        </td>
+        <td class="{{ 'delay' if dep.delay else 'on-time' }}">
+            {{ dep.status }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>
