@@ -80,21 +80,90 @@ def index():
 
 from flask import jsonify
 
-@app.route("/lametric")
-def lametric():
-    data = {
-        "frames": [
-            {
-                "text": "09:54 Lyon",
-                "icon": 1234
-            },
-            {
-                "text": "On time",
-                "icon": 5678
-            }
-        ]
+def get_aRoute():
+
+    params = {
+        "from": "Prévessin, Prenepla",
+        "to": "Genève",
+        "limit": 3
     }
-    return jsonify(data)
+
+    URL = "https://transport.opendata.ch/v1/connections"
+    
+    r = requests.get(URL, params=params)
+    data = r.json()
+
+    now = datetime.now().astimezone()  # local time with timezone
+    results = []
+
+    for conn in data.get("connections", []):
+        dep_str = conn["from"]["departure"]
+
+        # Fix timezone format (+0200 -> +02:00)
+        if dep_str[-5] in ['+', '-']:
+            dep_str = dep_str[:-2] + ':' + dep_str[-2:]
+
+        dep = datetime.fromisoformat(dep_str).astimezone()
+
+        minutes = int((dep - now).total_seconds() // 60)
+        if minutes < 0:
+            continue
+
+        line = (
+            conn["sections"][0]["journey"]["number"]
+            if conn["sections"][0].get("journey")
+            else conn["products"][0]
+        )
+
+        line = line.replace("Bus ", "")
+        time_str = dep.strftime("%H:%M")
+
+        results.append({
+            "text": f"{line} {time_str} {minutes}m"
+        })
+
+    return results
+
+@app.route("/lametric")
+
+#   def lametric():
+#       data = {
+#            "frames": [
+#                {
+#                    "text": "09:54 Lyon",
+#                    "icon": 1234
+#                },
+#                {
+#                    "text": "On time",
+#                   "icon": 5678
+#                }
+#            ]
+#        }
+#        return jsonify(data)
+
+
+def lametric():
+
+    deps = get_aRoute()
+
+    frames = []
+
+    # ⏰ Current time + day
+    now_local = datetime.now()
+    frames.append({
+        "text": now_local.strftime("%a %H:%M")
+    })
+
+    # 🚆 Departures with time
+    for d in deps:
+        frames.append(d)
+
+    if not deps:
+        frames.append({"text": "No buses"})
+
+    return jsonify({
+        "frames": frames
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
